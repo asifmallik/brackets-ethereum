@@ -1,0 +1,9 @@
+{
+    "name": "asifmallik.brackets-ethereum",
+    "title": "Brackets Ethereum",
+    "description": "Highlights solidity syntax",
+    "homepage": "https://github.com/asifmallik/brackets-ethereum",
+    "version": "1.0.0",
+    "author": "Asif Mallik <asifmallikjp@gmail.com> (http://asifmallik.com)",
+    "license": "MIT",
+}
