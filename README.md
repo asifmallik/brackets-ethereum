@@ -4,7 +4,7 @@
 
 ### Highlighting and editing
 - [x] Support for comments
-- [ ] Separate color for variable declaration
+- [x] Separate color for variable declaration
 - [ ] Show code hints for keywords and types
 - [ ] Show code hints for variables, functions, modifiers, etc.
 

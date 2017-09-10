@@ -61,11 +61,18 @@ define(function (require, exports, module) {
 				}
 				
 				if(stream.match(typesMatch)){
-					state.variableDeclaration = true;
+					if(!state.mappingDeclaration){
+						state.variableDeclaration = true;
+					}
 					return "keyword";
 				}
 
-				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|mapping|payable|constant|require)\b/)) {
+				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|payable|constant|require)\b/)) {
+					return "keyword";
+				}
+				
+				if(stream.match(/mapping\b/)){
+					state.mappingDeclaration = true;
 					return "keyword";
 				}
 
@@ -77,6 +84,22 @@ define(function (require, exports, module) {
 				if(state.variableDeclaration){
 					if(/[^A-Za-z0-9_$ ]/.test(stream.peek())){
 						state.variableDeclaration = false;
+					}else{
+						stream.next();
+						return "variable";
+					}
+				}
+				
+				if(state.mappingDeclaration && stream.peek() == ")"){
+					stream.next();
+					state.mappingDeclaration = false;
+					state.mappingName = true;
+					return null;
+				}
+				
+				if(state.mappingName){
+					if(/[^A-Za-z0-9_$ ]/.test(stream.peek())){
+						state.mappingName = false;
 					}else{
 						stream.next();
 						return "variable";
