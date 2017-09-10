@@ -107,16 +107,17 @@ define(function (require, exports, module) {
 					}
 				}
 
+
+				if (stream.match(/[a-zA-Z_$][\w$]*/)) {
+					return "variable-2";
+				}
+				
 				if (stream.match(/0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i)) {
 					return "number";
 				}
-
-				if (stream.eatWhile(/[a-zA-Z_$][\w$]*/)) {
-					return "variable-2";
-				} else {
-					stream.next();
-					return null;
-				}
+				
+				stream.next();
+				return null;
 			}
 		};
 
