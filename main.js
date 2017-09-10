@@ -90,7 +90,7 @@ define(function (require, exports, module) {
 				if (state.blockDeclaration) {
 					if (stream.match(/.+?(?=({|\())/)) {
 						state.blockDeclaration = false;
-						return "property";
+						return "variable";
 					}
 				}
 
