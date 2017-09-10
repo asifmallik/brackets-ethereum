@@ -57,7 +57,7 @@ define(function (require, exports, module) {
 					return "keyword";
 				}
 
-				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|payable|constant|require)\b/)) {
+				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|private|indexed|event|anonymous|payable|constant|require|new)\b/)) {
 					return "keyword";
 				}
 				
