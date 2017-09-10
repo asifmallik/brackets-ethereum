@@ -1,5 +1,5 @@
 define(function (require, exports, module) {
-
+	
 	var LanguageManager = brackets.getModule("language/LanguageManager");
 	var CodeMirror = brackets.getModule("thirdparty/CodeMirror/lib/codemirror");
 
@@ -20,6 +20,7 @@ define(function (require, exports, module) {
 			startState: function () {
 				return {
 					blockDeclaration: false,
+					variableDeclaration: false,
 					insideComment: false
 				};
 			},
@@ -58,14 +59,28 @@ define(function (require, exports, module) {
 						stream.next();
 					}
 				}
+				
+				if(stream.match(typesMatch)){
+					state.variableDeclaration = true;
+					return "keyword";
+				}
 
-				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|mapping|payable|constant|require)\b/) || stream.match(typesMatch)) {
+				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|mapping|payable|constant|require)\b/)) {
 					return "keyword";
 				}
 
 				if (stream.match(/(contract|modifier|function|library|struct)\b/)) {
 					state.blockDeclaration = true;
 					return "keyword";
+				}
+				
+				if(state.variableDeclaration){
+					if(/[^A-Za-z0-9_$ ]/.test(stream.peek())){
+						state.variableDeclaration = false;
+					}else{
+						stream.next();
+						return "variable";
+					}
 				}
 
 				if (stream.match(/true|false/)) {
@@ -84,7 +99,7 @@ define(function (require, exports, module) {
 				}
 
 				if (stream.eatWhile(/[a-zA-Z_$][\w$]*/)) {
-					return "variable";
+					return "variable-2";
 				} else {
 					stream.next();
 					return null;
