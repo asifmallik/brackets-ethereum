@@ -8,6 +8,7 @@
 - [ ] Struct declaration property highlighting
 - [ ] Show code hints for keywords and types
 - [ ] Show code hints for variables, functions, modifiers, etc.
+- [ ] Implement indentation
 
 ### Compilation and deployment
 - [ ] Compile solidity code within brackets
