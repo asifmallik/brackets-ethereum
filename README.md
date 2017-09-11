@@ -5,7 +5,7 @@
 ### Highlighting and editing
 - [x] Support for comments
 - [x] Separate color for variable declaration
-- [ ] Struct declaration property highlighting
+- [x] Struct declaration property highlighting
 - [ ] Show code hints for keywords and types
 - [ ] Show code hints for variables, functions, modifiers, etc.
 - [ ] Implement indentation
