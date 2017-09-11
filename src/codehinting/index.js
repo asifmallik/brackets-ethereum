@@ -2,15 +2,16 @@ define(function (require, exports, module) {
 	console.log('asdasdasd')
 	var LanguageManager = brackets.getModule("language/LanguageManager");
 	var CodeMirror = brackets.getModule("thirdparty/CodeMirror/lib/codemirror");
-	
+
 	var typesMatch = require("src/codehinting/types").typesMatch;
-	
+
 	CodeMirror.defineMode("solidity", function (config, parserConfig) {
 		return {
 			startState: function () {
 				return {
 					blockDeclaration: false,
 					variableDeclaration: false,
+					structVariableDeclaration: false,
 					insideComment: false
 				};
 			},
@@ -20,9 +21,9 @@ define(function (require, exports, module) {
 					return "comment";
 				}
 				if (state.insideComment) {
-					if(stream.match(/.*?\*\//)){
+					if (stream.match(/.*?\*\//)) {
 						state.insideComment = false;
-					}else{
+					} else {
 						stream.next();
 					}
 					return "comment";
@@ -41,6 +42,21 @@ define(function (require, exports, module) {
 					return null;
 				}
 
+				if (state.structVariableDeclaration && stream.match(/[\w$]+\s*:/)) {
+					stream.backUp(1);
+					return "property";
+				}
+
+				if (stream.match(/\(\s*{/)) {
+					state.structVariableDeclaration = true;
+					return null;
+				}
+
+				if (stream.match(/}\s*\)/)) {
+					state.structVariableDeclaration = false;
+					return null;
+				}
+
 				if (state.property) {
 					state.property = false;
 					if (stream.eatWhile(/[a-zA-Z$_][\w$]*/)) {
@@ -49,9 +65,9 @@ define(function (require, exports, module) {
 						stream.next();
 					}
 				}
-				
-				if(stream.match(typesMatch)){
-					if(!state.mappingDeclaration){
+
+				if (stream.match(typesMatch)) {
+					if (!state.mappingDeclaration) {
 						state.variableDeclaration = true;
 					}
 					return "keyword";
@@ -60,8 +76,8 @@ define(function (require, exports, module) {
 				if (stream.match(/(memory|storage|pure|view|import|as|from|\*|pragma|return|if|for|while|else|this|returns|external|internal|public|private|indexed|event|anonymous|payable|constant|require|new)\b/)) {
 					return "keyword";
 				}
-				
-				if(stream.match(/mapping\b/)){
+
+				if (stream.match(/mapping\b/)) {
 					state.mappingDeclaration = true;
 					return "keyword";
 				}
@@ -70,27 +86,27 @@ define(function (require, exports, module) {
 					state.blockDeclaration = true;
 					return "keyword";
 				}
-				
-				if(state.variableDeclaration){
-					if(/[^A-Za-z0-9_$ ]/.test(stream.peek())){
+
+				if (state.variableDeclaration) {
+					if (/[^A-Za-z0-9_$ ]/.test(stream.peek())) {
 						state.variableDeclaration = false;
-					}else{
+					} else {
 						stream.next();
 						return "variable";
 					}
 				}
-				
-				if(state.mappingDeclaration && stream.peek() == ")"){
+
+				if (state.mappingDeclaration && stream.peek() == ")") {
 					stream.next();
 					state.mappingDeclaration = false;
 					state.mappingName = true;
 					return null;
 				}
-				
-				if(state.mappingName){
-					if(/[^A-Za-z0-9_$ ]/.test(stream.peek())){
+
+				if (state.mappingName) {
+					if (/[^A-Za-z0-9_$ ]/.test(stream.peek())) {
 						state.mappingName = false;
-					}else{
+					} else {
 						stream.next();
 						return "variable";
 					}
@@ -111,11 +127,11 @@ define(function (require, exports, module) {
 				if (stream.match(/[a-zA-Z_$][\w$]*/)) {
 					return "variable-2";
 				}
-				
+
 				if (stream.match(/0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i)) {
 					return "number";
 				}
-				
+
 				stream.next();
 				return null;
 			}
